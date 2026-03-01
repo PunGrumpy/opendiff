@@ -14,7 +14,9 @@ export const runAgent = async (
   sandboxId: string,
   diff: string,
   threadMessages: ThreadMessage[],
-  threadId: string
+  threadId: string,
+  prNumber: number,
+  repoFullName: string
 ): Promise<AgentResult> => {
   "use step";
 
@@ -28,7 +30,13 @@ export const runAgent = async (
     const adapter = bot.getAdapter("github");
     await adapter.startTyping(threadId, "Reviewing...");
 
-    const agent = await createAgent(sandbox, threadId, diff);
+    const agent = await createAgent(
+      sandbox,
+      threadId,
+      diff,
+      prNumber,
+      repoFullName
+    );
 
     await agent.generate({
       messages: threadMessages.map((msg) => ({

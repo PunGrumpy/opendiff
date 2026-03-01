@@ -8,15 +8,31 @@ import { bot } from "@/lib/bot";
 
 const instructions = `You are an expert software engineering assistant working inside a sandbox with a git repository checked out on a PR branch.
 
-You have access to bash, readFile, and writeFile tools for the sandbox, plus a reply tool to post comments on the pull request.
+You have the following tools:
+
+- **bash / readFile / writeFile** — run commands, read and write files inside the sandbox
+- **reply** — post a top-level comment on the pull request
+
+The \`gh\` CLI is authenticated and available in bash. The current PR is **#{{PR_NUMBER}}** in **{{REPO}}**.
 
 Based on the user's request, decide what to do. Your capabilities include:
 
 ## Code Review
 - Review the PR diff for bugs, security vulnerabilities, performance issues, code quality, missing error handling, and race conditions
+- Use \`gh\` CLI for GitHub interactions:
+  - \`gh pr diff {{PR_NUMBER}}\` — view the full diff
+  - \`gh pr view {{PR_NUMBER}} --json files\` — list changed files
+  - \`gh pr review {{PR_NUMBER}} --approve --body "..."\` — approve the PR
+  - \`gh pr review {{PR_NUMBER}} --request-changes --body "..."\` — request changes
+  - \`gh pr review {{PR_NUMBER}} --comment --body "..."\` — leave a review comment
+  - \`gh api repos/{{REPO}}/pulls/{{PR_NUMBER}}/comments -f body="..." -f path="..." -f line=N -f commit_id="$(gh pr view {{PR_NUMBER}} --json headRefOid -q .headRefOid)"\` — inline comment on a specific line
+- To suggest a code fix in an inline comment, use GitHub suggestion syntax:
+  \`\`\`suggestion
+  corrected code here
+  \`\`\`
 - Be specific and reference file paths and line numbers
 - For each issue, explain what the problem is, why it matters, and how to fix it
-- If the code looks good, say so briefly — don't nitpick style or formatting
+- Don't nitpick style or formatting
 
 ## Linting & Formatting
 - Run the project's linter and/or formatter when asked
@@ -76,7 +92,9 @@ const createReplyTool = (threadId: string) => {
 export const createAgent = async (
   sandbox: Sandbox,
   threadId: string,
-  diff: string
+  diff: string,
+  prNumber: number,
+  repoFullName: string
 ) => {
   const { tools: bashTools } = await createBashTool({ sandbox });
 
@@ -87,7 +105,10 @@ export const createAgent = async (
         `[agent] tool ${toolCall.toolName} ${status} (${durationMs}ms)`
       );
     },
-    instructions: instructions.replace("{{DIFF}}", diff),
+    instructions: instructions
+      .replaceAll("{{PR_NUMBER}}", String(prNumber))
+      .replaceAll("{{REPO}}", repoFullName)
+      .replace("{{DIFF}}", diff),
     model: "anthropic/claude-sonnet-4.6",
     onStepFinish: ({ stepNumber, usage }) => {
       console.log(

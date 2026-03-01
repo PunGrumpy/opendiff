@@ -32,7 +32,8 @@ export interface WorkflowParams {
 export const botWorkflow = async (params: WorkflowParams): Promise<void> => {
   "use workflow";
 
-  const { baseBranch, messages, prBranch, repoFullName, threadId } = params;
+  const { baseBranch, messages, prBranch, prNumber, repoFullName, threadId } =
+    params;
 
   const pushAccess = await checkPushAccess(repoFullName, prBranch);
 
@@ -61,7 +62,14 @@ Please ensure the OpenReview app has access to this repository and branch.
     await extendSandbox(sandboxId);
 
     const diff = await getDiff(sandboxId, baseBranch);
-    const agentResult = await runAgent(sandboxId, diff, messages, threadId);
+    const agentResult = await runAgent(
+      sandboxId,
+      diff,
+      messages,
+      threadId,
+      prNumber,
+      repoFullName
+    );
 
     if (!agentResult.success) {
       throw new FatalError(agentResult.errorMessage ?? "Agent failed to run");

@@ -4,7 +4,8 @@ import { parseError } from "@/lib/error";
 
 const configureRemoteAndIdentity = async (
   sandbox: Sandbox,
-  authenticatedUrl: string
+  authenticatedUrl: string,
+  token: string
 ): Promise<void> => {
   await sandbox.runCommand("git", [
     "remote",
@@ -27,6 +28,11 @@ const configureRemoteAndIdentity = async (
     "user.email",
     "openreview[bot]@users.noreply.github.com",
   ]);
+
+  await sandbox.runCommand("bash", [
+    "-c",
+    `echo "${token}" | gh auth login --with-token`,
+  ]);
 };
 
 export const configureGit = async (
@@ -46,7 +52,7 @@ export const configureGit = async (
   const authenticatedUrl = `https://x-access-token:${token}@github.com/${repoFullName}.git`;
 
   try {
-    await configureRemoteAndIdentity(sandbox, authenticatedUrl);
+    await configureRemoteAndIdentity(sandbox, authenticatedUrl, token);
   } catch (error) {
     throw new Error(`Failed to configure git: ${parseError(error)}`, {
       cause: error,
