@@ -1,4 +1,4 @@
-import { bot } from "@/lib/chat";
+import { bot } from "@/lib/bot";
 
 export const addPRComment = async (
   threadId: string,

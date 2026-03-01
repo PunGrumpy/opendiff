@@ -1,7 +1,7 @@
 import { after, NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import { bot } from "@/lib/chat";
+import { bot } from "@/lib/bot";
 
 export const POST = (request: NextRequest): Promise<NextResponse> => {
   const handler = bot.webhooks.github;
