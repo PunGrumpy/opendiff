@@ -31,7 +31,7 @@ const configureRemoteAndIdentity = async (
 
   await sandbox.runCommand("bash", [
     "-c",
-    `echo "${token}" | gh auth login --with-token`,
+    `export PATH="$HOME/.local/bin:$PATH" && echo "${token}" | gh auth login --with-token`,
   ]);
 };
 

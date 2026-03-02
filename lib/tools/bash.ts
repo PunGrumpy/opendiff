@@ -11,7 +11,7 @@ const runBashStep = async (
   "use step";
 
   const sandbox = await Sandbox.get({ sandboxId });
-  const fullCommand = `cd "${SANDBOX_CWD}" && ${command}`;
+  const fullCommand = `export PATH="$HOME/.local/bin:$PATH" && cd "${SANDBOX_CWD}" && ${command}`;
   const result = await sandbox.runCommand("bash", ["-c", fullCommand]);
   const [stdout, stderr] = await Promise.all([
     result.stdout(),

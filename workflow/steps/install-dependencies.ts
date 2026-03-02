@@ -48,11 +48,15 @@ export const installDependencies = async (sandboxId: string): Promise<void> => {
   }
 
   try {
-    // Install GitHub CLI (direct binary)
+    // Install GitHub CLI
     const ghInstall = await sandbox.runCommand("bash", [
       "-c",
-      // oxlint-disable-next-line no-template-curly-in-string
-      'GH_VERSION=$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest | grep -o \'"tag_name":"v[^"]*\' | cut -d"v" -f2) && curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" | tar xz -C /tmp && sudo mv /tmp/gh_${GH_VERSION}_linux_amd64/bin/gh /usr/local/bin/gh && gh --version',
+      "command -v gh >/dev/null 2>&1 || (" +
+        "curl -sLO https://github.com/cli/cli/releases/download/v2.62.0/gh_2.62.0_linux_amd64.tar.gz &&" +
+        " tar xzf gh_2.62.0_linux_amd64.tar.gz &&" +
+        " mkdir -p ~/.local/bin &&" +
+        " cp -f gh_2.62.0_linux_amd64/bin/gh ~/.local/bin/ &&" +
+        " rm -rf gh_2.62.0_linux_amd64*)",
     ]);
 
     if (ghInstall.exitCode !== 0) {
