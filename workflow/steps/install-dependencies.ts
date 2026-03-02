@@ -48,11 +48,11 @@ export const installDependencies = async (sandboxId: string): Promise<void> => {
   }
 
   try {
-    // Install GitHub CLI via direct binary
+    // Install GitHub CLI via RPM (Amazon Linux 2023)
     await sandbox.runCommand("bash", [
       "-c",
       // oxlint-disable-next-line no-template-curly-in-string
-      'GH_VERSION=$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest | grep -o \'"tag_name":"v[^"]*\' | cut -d"v" -f2) && curl -fsSL "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" | tar xz -C /tmp && mv /tmp/gh_${GH_VERSION}_linux_amd64/bin/gh /usr/local/bin/gh',
+      'GH_VERSION=$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest | grep -o \'"tag_name":"v[^"]*\' | cut -d"v" -f2) && sudo dnf install -y -q "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.rpm"',
     ]);
 
     // Install project dependencies
