@@ -1,25 +1,19 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
 import { headers } from "next/headers";
 
+import { SetupPage } from "@/app/components/product-surfaces";
 import { getSetupDiagnostics } from "@/lib/setup-diagnostics";
 import { getDeploymentUrl } from "@/lib/site-url";
 
-import { LandingPage } from "./components/product-surfaces";
-
 const Page = async () => {
-  const [content, diagnostics, requestHeaders] = await Promise.all([
-    readFile(join(process.cwd(), "README.md"), "utf8"),
+  const [diagnostics, requestHeaders] = await Promise.all([
     getSetupDiagnostics(),
     headers(),
   ]);
 
   return (
-    <LandingPage
+    <SetupPage
       deploymentUrl={getDeploymentUrl(requestHeaders)}
       diagnostics={diagnostics}
-      readmeContent={content}
     />
   );
 };
