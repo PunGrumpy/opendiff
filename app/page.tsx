@@ -23,9 +23,41 @@ const features = [
   "Inline suggestions with one-click fixes",
   "Code changes committed and pushed to your PR branch",
   "Runs in a sandboxed environment with full repo access",
+  "Extensible skills system for specialized review domains",
   "React with thumbs up to approve or thumbs down to skip",
   "Powered by Claude via the AI SDK",
   "Built on Vercel Workflow for durable execution",
+];
+
+const skills = [
+  {
+    description: "File conventions, RSC boundaries, data patterns, async APIs, metadata, error handling, route handlers, image/font optimization",
+    name: "Next.js Best Practices",
+  },
+  {
+    description: "PPR, use cache directive, cacheLife, cacheTag, updateTag",
+    name: "Next.js Cache Components",
+  },
+  {
+    description: "Upgrade Next.js following official migration guides and codemods",
+    name: "Next.js Upgrade",
+  },
+  {
+    description: "React composition patterns that scale for component refactoring",
+    name: "Composition Patterns",
+  },
+  {
+    description: "React and Next.js performance optimization guidelines",
+    name: "React Best Practices",
+  },
+  {
+    description: "React Native and Expo best practices for performant mobile apps",
+    name: "React Native",
+  },
+  {
+    description: "Review UI code for Web Interface Guidelines and accessibility compliance",
+    name: "Web Design Guidelines",
+  },
 ];
 
 export const DeployButton = () => {
@@ -154,6 +186,29 @@ const Page = () => (
             >
               <span className="text-zinc-300 dark:text-zinc-700">&mdash;</span>
               {feature}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <h2 className="text-sm font-medium tracking-wider text-zinc-400 uppercase dark:text-zinc-500">
+          Built-in skills
+        </h2>
+        <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+          OpenReview uses a progressive skill system — the agent loads
+          specialized review instructions on demand, keeping context focused and
+          reviews thorough.
+        </p>
+        <ul className="flex flex-col gap-4">
+          {skills.map((skill) => (
+            <li className="flex flex-col gap-1" key={skill.name}>
+              <p className="text-sm font-medium text-zinc-950 dark:text-zinc-50">
+                {skill.name}
+              </p>
+              <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                {skill.description}
+              </p>
             </li>
           ))}
         </ul>

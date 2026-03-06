@@ -14,6 +14,7 @@ An open-source, self-hosted AI code review bot. Deploy to Vercel, connect a GitH
 - **Code changes** — Can directly fix formatting, lint errors, and simple bugs, then commit and push to your PR branch
 - **Reactions** — React with 👍 or ❤️ to approve suggestions, or 👎 or 😕 to skip
 - **Durable workflows** — Built on [Vercel Workflow](https://vercel.com/docs/workflow) for reliable, resumable execution
+- **Extensible skills** — Ships with built-in review skills and supports custom skills via `.agents/skills/`
 - **Powered by Claude** — Uses Claude Sonnet 4.6 via the [AI SDK](https://sdk.vercel.ai) for high-quality code analysis
 
 ## How it works
@@ -79,6 +80,45 @@ Install the GitHub App on the repositories you want OpenReview to monitor. Once 
 ```
 
 **Reactions**: React with 👍 or ❤️ on an OpenReview comment to approve and apply its suggestions. React with 👎 or 😕 to skip.
+
+## Skills
+
+OpenReview uses a progressive skill system — the agent only loads specialized instructions when relevant, keeping context focused and reviews thorough. Skills are discovered from `.agents/skills/` at runtime.
+
+### Built-in skills
+
+| Skill | Description |
+| --- | --- |
+| `next-best-practices` | File conventions, RSC boundaries, data patterns, async APIs, metadata, error handling |
+| `next-cache-components` | PPR, `use cache` directive, `cacheLife`, `cacheTag`, `updateTag` |
+| `next-upgrade` | Upgrade Next.js following official migration guides and codemods |
+| `vercel-composition-patterns` | React composition patterns that scale for component refactoring |
+| `vercel-react-best-practices` | React and Next.js performance optimization guidelines |
+| `vercel-react-native-skills` | React Native and Expo best practices for performant mobile apps |
+| `web-design-guidelines` | Review UI code for Web Interface Guidelines and accessibility compliance |
+
+### Adding custom skills
+
+Create a folder in `.agents/skills/` with a `SKILL.md` file containing YAML frontmatter:
+
+```
+.agents/skills/
+└── my-custom-skill/
+    └── SKILL.md
+```
+
+```markdown
+---
+name: my-custom-skill
+description: When to use this skill — the agent reads this to decide whether to load it.
+---
+
+# My Custom Skill
+
+Your specialized review instructions here...
+```
+
+The agent sees only skill names and descriptions in its system prompt. When a request matches a skill, it calls `loadSkill` to get the full instructions — keeping the context window clean.
 
 ## Tech stack
 
